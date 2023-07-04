@@ -4,11 +4,11 @@ describe('YPM Test', () => {
       'https://www.yourplaymat.com/?_ab=0&_fd=0&_sc=1&preview_theme_id=121423626321',
     )
 
-    cy.navigateToSubMenuItem(Cypress.env('menuItems').customSizePlaymat).then(
+    cy.navigateToSubMenuItem(Cypress.env('MENU_ITEMS').customSizePlaymat).then(
       () => {
         cy.location('href').then((href) => {
           expect(href).to.contain(
-            Cypress.env('menuItems').customSizePlaymat.path,
+            Cypress.env('MENU_ITEMS').customSizePlaymat.path,
           )
 
           Cypress.log({

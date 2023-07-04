@@ -1,7 +1,7 @@
 {
-  "name": "cypress-example-kitchensink",
+  "name": "cypress-ypm",
   "version": "0.0.0-development",
-  "description": "This is an example app used to showcase Cypress.io testing. For a full reference of our documentation, go to https://docs.cypress.io",
+  "description": "Test with Cypress",
   "main": "index.js",
   "files": [
     "app",
@@ -50,14 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cypress-io/cypress-example-kitchensink.git"
+    "url": "https://github.com/insectman/Cypress-Cloud/tree/Cypress-wei"
   },
-  "author": "Brian Mann",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/cypress-io/cypress-example-kitchensink/issues"
-  },
-  "homepage": "https://github.com/cypress-io/cypress-example-kitchensink#readme",
+  "author": "Zhang Wei",
+  "homepage": "https://github.com/insectman/Cypress-Cloud/tree/Cypress-wei",
   "dependencies": {
     "lambdatest-cypress-cli": "git+https://github.com/LambdaTest/lambdatest-cypress-cli.git",
     "npm-run-all": "^4.1.2",
@@ -66,6 +62,7 @@
   "devDependencies": {
     "@bahmutov/print-env": "1.2.0",
     "@cypress/eslint-plugin-dev": "5.0.0",
+    "@testing-library/cypress": "9.0.0",
     "colon-names": "1.0.0",
     "cypress": "12.14.0",
     "eslint": "7.0.0",
@@ -83,7 +80,7 @@
     "yaml-lint": "1.7.0"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=12.0.0"
   },
   "husky": {
     "hooks": {

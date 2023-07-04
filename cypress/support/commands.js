@@ -1,3 +1,5 @@
+import '@testing-library/cypress/add-commands'
+
 Cypress.Commands.add(
   'getMenu',
   () => cy.get('.mainmenu-container', { timeout: 5000 }), /* ,
