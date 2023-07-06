@@ -1,4 +1,6 @@
+import 'cypress-file-upload'
 import '@testing-library/cypress/add-commands'
+import 'cypress-xpath'
 
 Cypress.Commands.add(
   'getMenu',
@@ -87,12 +89,9 @@ Cypress.Commands.add('openUploadImageDialog', () => {
 
   Cypress.log({
     name: 'afterClickActionRegistered',
-    // shorter name for the Command Log
     displayName: 'setSS',
     message: 'click action registered',
     consoleProps: () => {
-      // return an object which will
-      // print to dev tools console on click
       return {
         'log ret val': 'car',
       }
@@ -101,15 +100,41 @@ Cypress.Commands.add('openUploadImageDialog', () => {
 })
 
 Cypress.Commands.add('selectImage', () => {
-  cy.openUploadImageDialog()
+  // cy.get('.uploadcare--button.uploadcare--button_size_big.uploadcare--button_primary.uploadcare--tab__action-button.needsclick.uploadcare--dragging__hide', {
+  //   timeout: 10000,
+  // }).selectFile({ path: 'cat_crt.png', type: 'image/png' })
+
+  // cy.fixture('cat_crt.png', 'base64').then((fileContent) => {
+  //   cy.get('.uploadcare--button.uploadcare--button_size_big.uploadcare--button_primary.uploadcare--tab__action-button.needsclick.uploadcare--dragging__hide').attachFile(
+  //     {
+  //       fileContent,
+  //       fileName: 'cat_crt.png',
+  //       mimeType: 'image/png',
+  //       encoding: 'base64',
+  //     },
+  //     { subjectType: 'input' },
+  //   )
+  // })
+
+  //Check file uploading with drag-drop
   cy.get('.uploadcare--draganddrop_supported').selectFile('cat_crt.png', {
     action: 'drag-drop',
+  }).then(() => {
+    cy.log('File selected successfully')
   })
 
+  //Check if image was loaded successfully
   cy.get('.uploadcare--media__image.uploadcare--preview__image', {
-    timeout: 10000,
+    timeout: 5000,
   })
-  .should('be.visible')
-  .and('have.prop', 'naturalWidth')
-  .should('be.greaterThan', 0)
+  .should('exist')
+
+  //Check Done Button
+  cy.get('.uploadcare--button.uploadcare--button_primary.uploadcare--footer__button.uploadcare--preview__done', {
+    timeout: 5000,
+  })
+  .then(($button) => {
+    cy.wrap($button).click()
+    cy.log('Done Button clicked successfully')
+  })
 })

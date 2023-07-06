@@ -1,34 +1,38 @@
 {
    "lambdatest_auth": {
-        "username": "ins3ctman",
-        "access_key": "ZVoveyGoAlXYTbA8K9D0cBqrsdtQoU1iT186frjANiXsSuK2k3"
+        "username": "zhang.wei.725",
+        "access_key": "2MciWCvsSQst5GUmI3UkjjxWlTOyWPzIl6CZQpVofDEhkeZAhS"
    },
    "browsers": [
       {
          "browser": "Chrome",
          "platform": "Windows 10",
          "versions": [
-            "latest-1"
+            "latest"
          ]
       },
       {
          "browser": "Firefox",
          "platform": "Windows 10",
          "versions": [
-            "latest-1"
+            "latest"
          ]
       }
    ],
    "run_settings": {
       "reporter_config_file": "base_reporter_config.json",
-      "build_name": "build-name",
+      "project_name": "Cypress-test-for-YPM",
+      "build_name": "build-cypress-test-YPM",
       "parallels": 1,
-      "specs": "**/*.cy.js",
+      "specs": "cypress/e2e/*.cy.js",
       "ignore_files": "",
-      "network": false,
+      "network": true,
       "headless": false,
       "npm_dependencies": {
-         "cypress": "12.14.0"
+         "cypress": "12.14.0",
+         "cypress-file-upload": "5.0.8",
+         "@testing-library/cypress": "",
+         "cypress-xpath": ""
       }
    },
    "tunnel_settings": {
