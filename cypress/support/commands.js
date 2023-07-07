@@ -138,3 +138,138 @@ Cypress.Commands.add('selectImage', () => {
     cy.log('Done Button clicked successfully')
   })
 })
+
+Cypress.Commands.add(
+  'discountCalculator',
+  (quantity) => {
+    let discount
+
+    cy.get('.adp-discount-table tbody tr')
+    .then(($rows) => {
+      const rows = $rows.toArray()
+
+      if (quantity < parseInt(Cypress.$(rows[0]).find('td').first().text())) return '0'
+
+      for (let i = 0; i < rows.length; i++) {
+        const rowQuantity = parseInt(Cypress.$(rows[i]).find('td').first().text())
+
+        if (quantity < rowQuantity) break
+
+        discount = Cypress.$(rows[i]).find('td').eq(1).text()
+      }
+    }).then(() => {
+      cy.log(`Discount for quantity ${quantity} is: ${discount}`)
+
+      return discount
+    })
+  },
+)
+
+Cypress.Commands.add(
+  'testCart',
+  (variations, size, quantity, price) => {
+    let discountedPrice = ((parseFloat(price)) * (1 - 0.15)).toFixed(2)
+
+    cy.get('.slide-cart-body', { timeout: 10000 })
+    .find('.cart-item', { timeout: 10000 }).first().as('newItem')
+    .find('.cart-title', { timeout: 10000 }).should('have.text', variations)
+    .then(() => {
+      cy.get('@newItem', { timeout: 10000 })
+      .then(($el) => {
+        cy.wrap($el).find('.cart-variant-item', { timeout: 10000 }).contains('strong', 'width')
+        .siblings('span')
+        .invoke('text').should('include', size.width)
+        .then(() => {
+          cy.log('Width is correct')
+        })
+      })
+
+      cy.get('@newItem', { timeout: 10000 })
+      .then(($el) => {
+        cy.wrap($el).find('.cart-variant-item', { timeout: 10000 }).contains('strong', 'height')
+        .siblings('span')
+        .invoke('text').should('include', size.height)
+        .then(() => {
+          cy.log('Height is correct')
+        })
+      })
+
+      cy.get('@newItem', { timeout: 10000 })
+      .find('.quantity', { timeout: 10000 }).should('have.text', quantity)
+      .then(() => {
+        cy.log('Quantity is correct')
+      })
+
+      // cy.get('@newItem', { timeout: 10000 })
+      // .find('img', { timeout: 10000 })
+      // .invoke('attr', 'data-srcset')
+      // .then((attr) => {
+      //   if (attr.includes('crop')) {
+      //     cy.log('Image was loaded on cart')
+      //   } else {
+      //     cy.fail('Image was not loaded on cart')
+      //   }
+      // })
+
+      cy.get('.slide-cart-footer', { timeout: 10000 })
+      .find('span.text-money', { timeout: 10000 }).invoke('text')
+      .should('include', discountedPrice)
+      .then(() => {
+        cy.log('Price is correct')
+      })
+    })
+    .then(() => {
+      cy.get('#slidecart_agree', { timeout: 10000 }).click()
+      .then(() => {
+        cy.log('Agree check box was checked.')
+      })
+    })
+    .then(() => {
+      cy.get('.submit-button.text-uppercase.text-white', { timeout: 10000 }).click()
+      .then(() => {
+        cy.log('Check out button was clicked.')
+      })
+    })
+  },
+)
+
+Cypress.Commands.add(
+  'testCheckOut',
+  (variations, size, price) => {
+    let discountedPrice = ((parseFloat(price)) * (1 - 0.15)).toFixed(2)
+
+    cy.get('._6zbcq55._1fragem19._1fragem1f._6zbcq58._6zbcq56', { timeout: 10000 })
+    .find('._6zbcq526._1fragem19._1fragem10._6zbcq52d', { timeout: 10000 }).eq(1)
+    .then(($el) => {
+      cy.wrap($el).find('._1x52f9s1._1fragemah._1x52f9sl._1fragem1l._1x52f9s2').invoke('text')
+      .should('include', variations)
+      .then(() => {
+        cy.log('Variation is correct in check out.')
+      })
+    })
+
+    cy.get('._6zbcq55._1fragem19._1fragem1f._6zbcq58._6zbcq56', { timeout: 10000 })
+    .find('._6zbcq526._1fragem19._1fragem10._6zbcq52d', { timeout: 10000 }).first().as('newItemInCheckOut')
+    .find('li._1bzftbj7._1fragemah', { timeout: 10000 }).contains('span', 'width').invoke('text')
+    .should('include', size.width)
+    .then(() => {
+      cy.log('Width is correct in check out.')
+    })
+
+    cy.get('@newItemInCheckOut', { timeout: 10000 })
+    .find('li._1bzftbj7._1fragemah', { timeout: 10000 }).contains('span', 'height').invoke('text')
+    .should('include', size.height)
+    .then(() => {
+      cy.log('Height is correct in check out.')
+    })
+
+    cy.xpath('//*[@id="app"]/div/div/div/div[1]/div/aside/div[2]/div/div/div/section/div[2]/div[3]/div[2]/div/div/strong', { timeout: 10000 })
+    .then(($el) => {
+      cy.wrap($el).invoke('text')
+      .should('include', discountedPrice)
+    })
+    .then(() => {
+      cy.log('Price is correct in check out.')
+    })
+  },
+)

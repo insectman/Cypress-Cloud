@@ -60,13 +60,13 @@ context('Custom Size Playmat', () => {
             })
         })
 
-        //Extend the Stitched Edging options.
+        //Expand the Stitched Edging options.
         cy.xpath('//*[@id="page"]/main/div[2]/div[1]/div[2]/div/form/div[7]/div/div[2]/ul')
         .then(($element) => {
           // Check if the element has the 'collapse-list' class
           if ($element.hasClass('collapse-list')) {
             cy.wrap($element).click()
-            cy.log('Stitched Edges was extended')
+            cy.log('Stitched Edges was expanded')
           }
         })
 
@@ -116,16 +116,17 @@ context('Custom Size Playmat', () => {
             })
         })
 
-        //Extend Card Zones options.
+        //Expand Card Zones options.
         cy.xpath('//*[@id="page"]/main/div[2]/div[1]/div[2]/div/form/div[12]/div/div[2]/ul')
         .then(($element) => {
           // Check if element has 'collapse-list' class
           if ($element.hasClass('collapse-list')) {
             cy.wrap($element).click()
-            cy.log('Card Zones was extended')
+            cy.log('Card Zones was expanded')
           }
         })
         .then(() => {
+          //Test all <li>s
           cy.xpath('//*[@id="page"]/main/div[2]/div[1]/div[2]/div/form/div[12]/div/div[2]/ul')
           .find('li').each(($el, index, $list) => {
             cy.wrap($el).click().then(() => {
@@ -135,6 +136,98 @@ context('Custom Size Playmat', () => {
               cy.xpath('//*[@id="page"]/main/div[2]/div[1]/div[2]/div/form/div[12]/div/div[2]/ul').click()
             })
           })
+        })
+
+        // Collapse the drop down list
+        cy.xpath('//*[@id="page"]/main/div[2]/div[1]/div[2]/div/form/div[12]/div/div[2]/ul').click()
+
+        // Check selecting Quantity
+        // Check initial value
+        cy.get('#quantity')
+        .should('have.value', '1')
+        .then(() => cy.log('Initial value checked: 1'))
+
+        // Click the plus button to increment the value
+        cy.get('.quantity-selector .plus')
+        .then(($btn) => {
+          for (let i = 0; i < 5; i++) {
+            cy.wrap($btn).click()
+          }
+        })
+        .then(() => {
+          // Assert that the value has been incremented
+          cy.get('#quantity')
+          .should('have.value', '6')
+          .then(() => cy.log('Plus button works'))
+        })
+
+        // Click the minus button to decrement the value
+        cy.get('.quantity-selector .minus')
+        .click()
+        .then(() => {
+          // Assert that the value has been decremented
+          cy.get('#quantity')
+          .should('have.value', '5')
+          .then(() => cy.log('Minus button works'))
+        })
+
+        //********************** Check Add to Cart *********************
+        cy.contains('button', 'add to cart').click()
+        .then(() => {
+          cy.log('Add to cart button clicked successfully')
+        })
+        .then(() => {
+          cy.get('.slide-cart-sidebar.expanded')
+          .should('exist')
+          .then(() => {
+            cy.log('Cart sidebar is expanded as expected')
+          })
+        })
+
+        // Get size to comapre with cart.
+        cy.get('.product-money')
+        .invoke('text')
+        .then((fullText) => {
+          const parts = fullText.split('x')
+
+          let width = parts[0].trim()
+          let height = parts[1].split('inch')[0].trim()
+
+          Cypress.env('size', { width, height })
+
+          cy.log('Width:', width)
+          cy.log('Height:', height)
+        })
+        .then(() => {
+          // Get price to comapre with cart.
+          cy.get('.product-money .text-money').invoke('text')
+          .then((fullText) => {
+            // Get decimal places in the text
+            const match = fullText.match(/(\d+\.\d+)/)
+            let price
+
+            // If a match was found, convert it to a number and assign it to `price`
+            if (match) {
+              price = parseFloat(match[1])
+            }
+
+            Cypress.env('price', price)
+          })
+
+          // Get quantity to comapre with cart.
+          cy.get('#quantity').then(($el) => {
+            let quantity = $el.text()
+
+            Cypress.env('quantity', quantity)
+          })
+        })
+        .then(() => {
+          //********************** Test Cart ********************
+          cy.testCart('Custom Size Playmat', Cypress.env('size'), Cypress.env('quantity'), Cypress.env('price'))
+        })
+        .then(() => {
+          //*********************** Test Check Out****************
+          cy.testCheckOut('Custom Size Playmat', Cypress.env('size'), Cypress.env('price'))
         })
       },
     )
