@@ -1,5 +1,5 @@
 context('Custom Size Playmat', () => {
-  it('Custom Size Playmat is accessible', () => {
+  it('Custom Size Playmat function full test', () => {
     const previewThemeId = Cypress.env('PREVIEW_THEME_ID') // Get the environment variable
 
     cy.visit(`https://www.yourplaymat.com?_ab=0&_fd=0&_sc=1&preview_theme_id=${previewThemeId}`)
