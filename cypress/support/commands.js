@@ -1,6 +1,5 @@
 import 'cypress-file-upload'
 import '@testing-library/cypress/add-commands'
-import 'cypress-xpath'
 
 Cypress.Commands.add(
   'getMenu',
@@ -82,10 +81,10 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('openUploadImageDialog', () => {
   cy.contains('span', 'Upload Image', {
-    timeout: 10000,
+    timeout: 50000,
   })
-      .should('not.have.class', 'disabled')
-      .click()
+  .should('not.have.class', 'disabled', { timeout: 50000 })
+  .click()
 
   Cypress.log({
     name: 'afterClickActionRegistered',
@@ -170,13 +169,25 @@ Cypress.Commands.add(
   (variations, size, quantity, price) => {
     let discountedPrice = ((parseFloat(price)) * (1 - 0.15)).toFixed(2)
 
+    cy.get('#recart-root', { timeout: 30000 })
+    .then(($el) => {
+      if ($el.find('.recart-popup-container-lightbox-desktop.with-additional-image.right.recart-popup-custom-wrapper').length > 0) {
+        cy.get('.recart-popup-container-lightbox-desktop.with-additional-image.right.recart-popup-custom-wrapper', { timeout: 30000 })
+          .first()
+          .then(($matchedElement) => {
+            cy.get('.recart-popup-custom-close').click()
+            // Add your logic here for when the element exists
+          })
+      }
+    })
+
     cy.get('.slide-cart-body', { timeout: 10000 })
     .find('.cart-item', { timeout: 10000 }).first().as('newItem')
     .find('.cart-title', { timeout: 10000 }).should('have.text', variations)
     .then(() => {
       cy.get('@newItem', { timeout: 10000 })
       .then(($el) => {
-        cy.wrap($el).find('.cart-variant-item', { timeout: 10000 }).contains('strong', 'width')
+        cy.wrap($el).find('.cart-variant-item', { timeout: 50000 }).contains('strong', 'width')
         .siblings('span')
         .invoke('text').should('include', size.width)
         .then(() => {
@@ -186,7 +197,7 @@ Cypress.Commands.add(
 
       cy.get('@newItem', { timeout: 10000 })
       .then(($el) => {
-        cy.wrap($el).find('.cart-variant-item', { timeout: 10000 }).contains('strong', 'height')
+        cy.wrap($el).find('.cart-variant-item', { timeout: 50000 }).contains('strong', 'height')
         .siblings('span')
         .invoke('text').should('include', size.height)
         .then(() => {
@@ -200,16 +211,16 @@ Cypress.Commands.add(
         cy.log('Quantity is correct')
       })
 
-      // cy.get('@newItem', { timeout: 10000 })
-      // .find('img', { timeout: 10000 })
-      // .invoke('attr', 'data-srcset')
-      // .then((attr) => {
-      //   if (attr.includes('crop')) {
-      //     cy.log('Image was loaded on cart')
-      //   } else {
-      //     cy.fail('Image was not loaded on cart')
-      //   }
-      // })
+      cy.get('@newItem', { timeout: 10000 })
+      .find('img', { timeout: 10000 })
+      .invoke('attr', 'data-srcset')
+      .then((attr) => {
+        if (attr.includes('crop')) {
+          cy.log('Image was loaded on cart')
+        } else {
+          cy.fail('Image was not loaded on cart')
+        }
+      })
 
       cy.get('.slide-cart-footer', { timeout: 10000 })
       .find('span.text-money', { timeout: 10000 }).invoke('text')
@@ -238,32 +249,35 @@ Cypress.Commands.add(
   (variations, size, price) => {
     let discountedPrice = ((parseFloat(price)) * (1 - 0.15)).toFixed(2)
 
-    cy.get('._6zbcq55._1fragem19._1fragem1f._6zbcq58._6zbcq56', { timeout: 10000 })
-    .find('._6zbcq526._1fragem19._1fragem10._6zbcq52d', { timeout: 10000 }).eq(1)
+    cy.get('div[role="table"][aria-labelledby="ResourceList0"]', { timeout: 10000 })
+    .find('div[role="row"]', { timeout: 10000 }).eq(1)
     .then(($el) => {
-      cy.wrap($el).find('._1x52f9s1._1fragemah._1x52f9sl._1fragem1l._1x52f9s2').invoke('text')
+      cy.wrap($el)
+      .find('div[role="cell"]', { timeout: 10000 }).eq(1)
+      .find('p').first().invoke('text')
       .should('include', variations)
       .then(() => {
         cy.log('Variation is correct in check out.')
       })
     })
 
-    cy.get('._6zbcq55._1fragem19._1fragem1f._6zbcq58._6zbcq56', { timeout: 10000 })
-    .find('._6zbcq526._1fragem19._1fragem10._6zbcq52d', { timeout: 10000 }).first().as('newItemInCheckOut')
-    .find('li._1bzftbj7._1fragemah', { timeout: 10000 }).contains('span', 'width').invoke('text')
+    cy.get('div[role="table"][aria-labelledby="ResourceList0"]', { timeout: 10000 })
+    .find('div[role="row"]', { timeout: 10000 }).eq(1).as('newItemInCheckOut')
+    .find('li', { timeout: 10000 }).contains('span', 'width').invoke('text')
     .should('include', size.width)
     .then(() => {
       cy.log('Width is correct in check out.')
     })
 
     cy.get('@newItemInCheckOut', { timeout: 10000 })
-    .find('li._1bzftbj7._1fragemah', { timeout: 10000 }).contains('span', 'height').invoke('text')
+    .find('li', { timeout: 10000 }).contains('span', 'height').invoke('text')
     .should('include', size.height)
     .then(() => {
       cy.log('Height is correct in check out.')
     })
 
-    cy.xpath('//*[@id="app"]/div/div/div/div[1]/div/aside/div[2]/div/div/div/section/div[2]/div[3]/div[2]/div/div/strong', { timeout: 10000 })
+    cy.get('div[role="table"][aria-labelledby="MoneyLine-Heading0"]', { timeout: 10000 })
+    .contains('strong', '$')
     .then(($el) => {
       cy.wrap($el).invoke('text')
       .should('include', discountedPrice)

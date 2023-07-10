@@ -31,8 +31,7 @@
       "npm_dependencies": {
          "cypress": "12.14.0",
          "cypress-file-upload": "5.0.8",
-         "@testing-library/cypress": "",
-         "cypress-xpath": ""
+         "@testing-library/cypress": ""
       }
    },
    "tunnel_settings": {
